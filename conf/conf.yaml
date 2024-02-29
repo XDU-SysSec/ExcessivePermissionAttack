@@ -1,0 +1,15 @@
+apiServer: "192.11.1.1"
+proxyAddress: "http://localhost:7890" # 不使用代理时, 设置为空
+auth:
+  - tokenFile: "/usr/local/k8s/token" # token文件路径(token和crt同时设置时,优先使用token认证)
+  - kubeconfig: ""
+  - crt: ""  # crt路径
+    key: ""  # key文件路径
+ssh:  #已控制的node(将在该node上获取token)
+  - ip: "192.168.183.131"
+    port: "22"
+    username: "root"
+    password: "root"
+    privateKeyFile: "" #同时设置passwd和keyFile时，优先私钥登录
+    nodeName: "k8s-node1" # 已控制的node名
+
