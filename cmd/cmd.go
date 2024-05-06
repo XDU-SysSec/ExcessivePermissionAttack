@@ -21,7 +21,7 @@ func Main() {
 	ssh = conf.SSH
 	operation := ""
 	for {
-		fmt.Print("[scan/exp/help] 输入操作: ")
+		fmt.Print("[scan/exp/help] Input the operation: ")
 		fmt.Scan(&operation)
 		switch operation {
 		case "scan":
@@ -62,7 +62,7 @@ func Main() {
 				for sa, permission := range saBindingMap {
 					if strings.Contains(sa, operation) {
 						fmt.Println("--------------------------------")
-						fmt.Println(">>>>>", "账户"+sa+"权限", "<<<<<")
+						fmt.Println(">>>>>", "account"+sa+"permissions", "<<<<<")
 						for res, verb := range permission.Permission {
 							fmt.Println("\t", res, "-->", verb)
 						}
@@ -78,7 +78,7 @@ func Main() {
 				}
 				for sa, permission := range saBindingMap {
 					fmt.Println("--------------------------------")
-					fmt.Println(">>>>>", "账户"+sa+"权限", "<<<<<")
+					fmt.Println(">>>>>", "account"+sa+"permissions", "<<<<<")
 					for res, verb := range permission.Permission {
 						fmt.Println("\t", res, "-->", verb)
 					}
@@ -136,7 +136,7 @@ func classify(ControledNode string) map[string][]SA_sort {
 		if !criticalSA.Crisa.InNode || !criticalSA.Crisa.SA0.IsMounted {
 			continue
 		}
-		kindType := criticalSA.Type //还原rawType
+		kindType := criticalSA.Type //reduce the rawType
 		if strings.Contains(criticalSA.Type, "(") {
 			kindType = kindType[:strings.Index(kindType, "(")]
 		} else if strings.Contains(criticalSA.Type, "[") {
@@ -156,7 +156,7 @@ func classify(ControledNode string) map[string][]SA_sort {
 			tmpType = "dos"
 		}
 		if criticalSA.Crisa.Level == "namespace" && !strings.Contains(criticalSA.Type, "kube-system") {
-			//newResult = map[string]structure.CriticalSA{"restrict" + tmpType + "-" + criticalSA.Type: criticalSA} //对于restrict的情况，将已有restrict列出来提供选择
+			//newResult = map[string]structure.CriticalSA{"restrict" + tmpType + "-" + criticalSA.Type: criticalSA} //In the case of restrictions, existing restrictions are listed to provide options.
 			newResult = SA_sort{Level: "restrict" + tmpType + "-" + criticalSA.Type, SA: criticalSA, dispatchFunc: dispatchfunc}
 		}
 		// if newResult.SA.InNode {
@@ -179,10 +179,10 @@ func exploit(payloads map[string][]SA_sort, ControledNode string, hijacked bool)
 	for _, sa := range payloads["escalate"] {
 		if strings.Contains(sa.Level, "any") {
 			if cnt == 0 {
-				fmt.Println("[√] 可进行任意权限提升,可用权限如下:")
+				fmt.Println("[√] privilege escalation. The available permissions are as follows:")
 				fmt.Println("---------------------------")
 			}
-			fmt.Println(cnt, sa.SA.Type, "使用SA:", sa.SA.Crisa.SA0.Name)
+			fmt.Println(cnt, sa.SA.Type, "use SA:", sa.SA.Crisa.SA0.Name)
 			anyescalateMap[cnt] = sa
 			cnt++
 		}
@@ -190,19 +190,19 @@ func exploit(payloads map[string][]SA_sort, ControledNode string, hijacked bool)
 	if len(anyescalateMap) != 0 {
 		var choice int
 		fmt.Println("---------------------------")
-		fmt.Print("[input] 选择一个提权类型: ")
+		fmt.Print("[input] Choose a privilege escalation type: ")
 		fmt.Scan(&choice)
-		fmt.Println("[msg] 即将使用", "账户"+anyescalateMap[choice].SA.Crisa.SA0.Name, "(权限"+anyescalateMap[choice].SA.Type+")", "进行权限提升")
+		fmt.Println("[msg] Coming soon", "account"+anyescalateMap[choice].SA.Crisa.SA0.Name, "(permissions"+anyescalateMap[choice].SA.Type+")", "Perform privilege escalation")
 		dispatch(anyescalateMap[choice].SA.Crisa, anyescalateMap[choice].dispatchFunc)
 		return
 	}
 	if hijacked {
 		if len(payloads["escalate"]) == 0 {
-			fmt.Println("[X] 未检测到可用的提权权限")
+			fmt.Println("[X] No available privilege escalation detected")
 			return
 		}
-		fmt.Println("[!] 仍然无法任意权限提升")
-		fmt.Println("[msg] 准备列出可以进行的部分权限提升")
+		fmt.Println("[!] Still unable to arbitrarily escalate privileges")
+		fmt.Println("[msg] Prepare a list of some of the privilege escalations that can be made")
 		fmt.Println("---------------------------")
 		escalateMap := make(map[int]SA_sort)
 		cnt := 0
@@ -212,16 +212,16 @@ func exploit(payloads map[string][]SA_sort, ControledNode string, hijacked bool)
 			cnt++
 		}
 		fmt.Println("---------------------------")
-		fmt.Print("[input] 选择一个提权类型: ")
+		fmt.Print("[input] Choose a privilege escalation type: ")
 		var choice int
 		fmt.Scan(&choice)
-		fmt.Println("[msg] 即将使用", "账户"+escalateMap[choice].SA.Crisa.SA0.Name, "(权限"+escalateMap[choice].SA.Type+")", "进行权限提升")
+		fmt.Println("[msg] Coming soon", "account"+escalateMap[choice].SA.Crisa.SA0.Name, "(permissions"+escalateMap[choice].SA.Type+")", "Perform privilege escalation")
 		dispatch(escalateMap[choice].SA.Crisa, escalateMap[choice].dispatchFunc)
 	}
 
 	if !hijacked {
-		fmt.Println("[!] 不足以任意权限提升")
-		fmt.Println("[msg] 准备检测'劫持'相关权限")
+		fmt.Println("[!] Unable to arbitrarily escalate privileges")
+		fmt.Println("[msg] Prepare to detect 'hijacking' related permissions")
 		hijack(payloads, ControledNode)
 		exploit(payloads, ControledNode, true)
 	}
@@ -229,7 +229,7 @@ func exploit(payloads map[string][]SA_sort, ControledNode string, hijacked bool)
 
 func hijack(payloads map[string][]SA_sort, ControledNode string) bool {
 	if len(payloads["hijack"]) == 0 {
-		fmt.Println("[!] 未检测到'劫持'相关权限")
+		fmt.Println("[!] No 'hijack' related permissions detected")
 		return false
 	}
 	anyhijackMap := make(map[int]SA_sort)
@@ -237,7 +237,7 @@ func hijack(payloads map[string][]SA_sort, ControledNode string) bool {
 	for _, sa := range payloads["hijack"] {
 		if strings.Contains(sa.Level, "any") {
 			if cnt1 == 0 {
-				fmt.Println("[√] 可以任意组件劫持,可用权限如下:")
+				fmt.Println("[√] Any component can be hijacked, and the available permissions are as follows::")
 				fmt.Println("---------------------------")
 			}
 			fmt.Println(cnt1, sa.SA.Type, sa.SA.Crisa.SA0.Name)
@@ -248,14 +248,14 @@ func hijack(payloads map[string][]SA_sort, ControledNode string) bool {
 	if len(anyhijackMap) != 0 {
 		var choice int
 		fmt.Println("---------------------------")
-		fmt.Print("[input] 选择一个提权类型: ")
+		fmt.Print("[input] Choose a privilege escalation type: ")
 		fmt.Scan(&choice)
-		fmt.Println("[msg] 即将使用", "账户"+anyhijackMap[choice].SA.Crisa.SA0.Name, "(权限"+anyhijackMap[choice].SA.Type+")", "进行组件劫持")
+		fmt.Println("[msg] Coming soon", "account"+anyhijackMap[choice].SA.Crisa.SA0.Name, "(permissions"+anyhijackMap[choice].SA.Type+")", "Perform component hijacking")
 		dispatch(anyhijackMap[choice].SA.Crisa, anyhijackMap[choice].dispatchFunc)
 		return true
 	}
-	fmt.Println("[!] 只能劫持部分特定的组件")
-	fmt.Println("[msg] 准备列出可劫持的特定组件")
+	fmt.Println("[!] Only certain components can be hijacked")
+	fmt.Println("[msg] Prepare to list specific components that can be hijacked")
 	fmt.Println("---------------------------")
 	hijackMap := make(map[int]SA_sort)
 	cnt2 := 0
@@ -265,10 +265,10 @@ func hijack(payloads map[string][]SA_sort, ControledNode string) bool {
 		cnt2++
 	}
 	fmt.Println("---------------------------")
-	fmt.Print("[input] 选择一个劫持类型: ")
+	fmt.Print("[input] Choose a hijacking type: ")
 	var choice int
 	fmt.Scan(&choice)
-	fmt.Println("[msg] 即将使用", "账户"+hijackMap[choice].SA.Crisa.SA0.Name, "(权限"+hijackMap[choice].SA.Type+")", "进行组件劫持")
+	fmt.Println("[msg] Coming soon", "account"+hijackMap[choice].SA.Crisa.SA0.Name, "(permissions"+hijackMap[choice].SA.Type+")", "Perform component hijacking")
 	dispatch(hijackMap[choice].SA.Crisa, hijackMap[choice].dispatchFunc)
 	return true
 }
@@ -281,12 +281,12 @@ func dispatch(sa structure.CriticalSA, dispatchFunc string) {
 	}
 	funcValue := reflect.ValueOf(funcMap[dispatchFunc])
 	args := []reflect.Value{reflect.ValueOf([]structure.CriticalSA{sa}), reflect.ValueOf(ssh)}
-	//fmt.Println("[msg] 即将调用:", strings.Title(sa.Type))
+	//fmt.Println("[msg] About to be called:", strings.Title(sa.Type))
 	funcValue.Call(args)
 }
 
 type SA_sort struct {
-	Level        string                      //用于按照(any、restrict)排序的key
-	dispatchFunc string                      //用于调用函数的key
-	SA           structure.CriticalSAWrapper //实际的SA信息
+	Level        string                      //Key used to sort by (any, restrict)
+	dispatchFunc string                      //key used to call the function
+	SA           structure.CriticalSAWrapper //Actual SA information
 }
