@@ -29,7 +29,7 @@ func GetClientSet(token string) *kubernetes.Clientset {
 		config.WrapTransport = func(rt http.RoundTripper) http.RoundTripper {
 			return &http.Transport{
 				Proxy: proxy,
-				// 可以根据需要进行其他配置
+				// Other configurations can be made as needed.
 			}
 		}
 	}
@@ -43,7 +43,7 @@ func GetClientSet(token string) *kubernetes.Clientset {
 	// 	Host:        "https://" + conf.ApiServer, //"https://192.168.183.130:6443"
 	// 	TLSClientConfig: rest.TLSClientConfig{
 	// 		Insecure: true,
-	// 		// CAData: []byte(""), 如果 Insecure: true 未开启，需要 CAData
+	// 		// CAData: []byte(""), If Insecure: true is not enabled, CAData is required.
 	// 	},
 	// }
 	clientset, err := kubernetes.NewForConfig(config)
