@@ -27,7 +27,7 @@ func CheckRestrict(k string, rawType string, criticalSA *structure.CriticalSA) s
 	} else {
 		criticalSA.Level = "cluster"
 	}
-	//更新
+	//Update
 	if strings.Contains(k, "(") {
 		criticalSA.ResourceName = strings.Trim(k[strings.Index(k, "("):], "()")
 	}
@@ -38,7 +38,7 @@ func CheckRestrict(k string, rawType string, criticalSA *structure.CriticalSA) s
 }
 
 func ReadRemoteFile(host string, port int, username, password, pribateKeyFile string, filePath string) (string, error) {
-	// 远程主机的 SSH 配置信息
+	// SSH configuration information of the remote host
 	sshConfig := &ssh.ClientConfig{
 		User:            username,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
@@ -55,26 +55,26 @@ func ReadRemoteFile(host string, port int, username, password, pribateKeyFile st
 		sshConfig.Auth = []ssh.AuthMethod{ssh.Password(password)}
 	}
 
-	// 连接到远程主机
+	// Connect to remote host
 	client, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", host, port), sshConfig)
 	if err != nil {
 		return "", fmt.Errorf("Failed to dial: %v", err)
 	}
 	defer client.Close()
 
-	// 打开一个新的 SSH 会话
+	// Open a new SSH session
 	session, err := client.NewSession()
 	if err != nil {
 		return "", fmt.Errorf("Failed to create session: %v", err)
 	}
 	defer session.Close()
 
-	// 执行远程命令，读取文件内容
+	// Execute remote commands and read file contents
 	output, err := session.CombinedOutput("cat " + filePath)
 	if err != nil {
 		return "", fmt.Errorf("Failed to execute command: %v", err)
 	}
 
-	// 返回文件内容
+	// Return file content
 	return string(output), nil
 }
