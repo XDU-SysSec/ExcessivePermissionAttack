@@ -50,7 +50,7 @@ func GetPods() ([]apis.Pod, error) {
 }
 
 func GetClusterRoleBindings() []apis.RoleBinding {
-	// 获取所有 clusterrole
+	//Get all clusterroles
 	opts := request.K8sRequestOption{
 		Api:    "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings",
 		Method: "GET",
