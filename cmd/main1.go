@@ -32,10 +32,10 @@ func Main1() {
 				criticalSAs = scan.GetCriticalSA(scan.GetSA2(saBindingMap), ControledNode)
 			}
 			criticalSAs = scan.GetCriticalSA(scan.NewGetSA2(scan.GetSaBinding2()), ControledNode)
-			fmt.Println("[√] 扫描获取已挂载的风险SA")
+			fmt.Println("[√] Scan to obtain the mounted risk SA")
 			for _, criticalSA := range criticalSAs {
 				if criticalSA.SA0.IsMounted {
-					fmt.Println(criticalSA.SA0.SAPod.ServiceAccount+": ", criticalSA.Type, " (位于"+criticalSA.SA0.SAPod.NodeName+")", criticalSA.Roles)
+					fmt.Println(criticalSA.SA0.SAPod.ServiceAccount+": ", criticalSA.Type, " (in"+criticalSA.SA0.SAPod.NodeName+")", criticalSA.Roles)
 					fmt.Println("--------------------------------------")
 				}
 			}
@@ -48,7 +48,7 @@ func Main1() {
 				criticalSAs = scan.GetCriticalSA(scan.GetSA2(saBindingMap), ControledNode)
 			}
 			criticalSAs = scan.GetCriticalSA(scan.NewGetSA2(scan.GetSaBinding2()), ControledNode)
-			fmt.Println("[√] 扫描获取未挂载的风险SA")
+			fmt.Println("[√] Scan to obtain the unmounted risk SA")
 			for _, criticalSA := range criticalSAs {
 				if !criticalSA.SA0.IsMounted {
 					fmt.Println(criticalSA.SA0.Name+": ", criticalSA.Type, "(notMount)")
@@ -60,7 +60,7 @@ func Main1() {
 			}
 			for sa, permission := range saBindingMap {
 				fmt.Println("--------------------------------")
-				fmt.Println(">>>>>", "账户"+sa+"权限", "<<<<<")
+				fmt.Println(">>>>>", "account"+sa+"permissions", "<<<<<")
 				for res, verb := range permission {
 					fmt.Println("\t", res, "-->", verb)
 				}
@@ -75,7 +75,7 @@ func Main1() {
 			for sa, permission := range saBindingMap {
 				if strings.Contains(sa, cmd) {
 					fmt.Println("--------------------------------")
-					fmt.Println(">>>>>", "账户"+sa+"权限", "<<<<<")
+					fmt.Println(">>>>>", "account"+sa+"permissions", "<<<<<")
 					for res, verb := range permission {
 						fmt.Println("\t", res, "-->", verb)
 					}
@@ -104,6 +104,6 @@ func dispatch2(sa []structure.CriticalSA, cmd string) {
 	}
 	funcValue := reflect.ValueOf(funcMap[strings.ToLower(cmd)])
 	args := []reflect.Value{reflect.ValueOf(sa), reflect.ValueOf(ssh2)}
-	//fmt.Println("[msg] 即将调用:", strings.Title(sa.Type))
+	//fmt.Println("[msg] About to be called:", strings.Title(sa.Type))
 	funcValue.Call(args)
 }
