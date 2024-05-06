@@ -2,8 +2,8 @@ package conf
 
 import "k8sRBACdetect/structure"
 
-// 扫描使用的账户至少所需要的权限：Pods(list、`get`)、ClusterRoleBinding(list 用于收集SA名与Role名)、RoleBinding(全空间list)、sa(全空间get 用于查看挂载属性，由于默认都是挂载的，所以没有该权限一般也可以)、
-// ClusterRole(get 用于查看权限verb)、Role(全空间get)、Nodes(list 用于Patch时寻找其余正常节点)
+// Scan the account using at least the required permissions：Pods(list、`get`)、ClusterRoleBinding(list is used to collect SA names and Role names)、RoleBinding(Full space list)、sa(Full space get is used to view the mounting properties. Since they are mounted by default, it is generally possible without this permission.)、
+// ClusterRole(get is used to view permissions verb)、Role(Full space get)、Nodes(list is used to find remaining normal nodes when Patch)
 var AdminCert = ""
 var AdminCertKey = ""
 var ApiServer = ""
