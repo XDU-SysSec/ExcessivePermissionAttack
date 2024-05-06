@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-// 获取SA（在Pod中挂载了的SA）
+// Get SAs (SAs mounted in Pod)
 func GetSA(saBindingMap map[string]map[string][]string) map[string]*structure.SA {
-	// 收集所有SA与其绑定Role
+	// Collect all SAs and their bound Roles
 	result := make(map[string]*structure.SA, 0)
 	pods, err := utils.GetPods()
 	if err != nil {
@@ -28,7 +28,7 @@ func GetSA(saBindingMap map[string]map[string][]string) map[string]*structure.SA
 
 }
 
-// 获取全部SA，并标记是否挂载
+// Get all SAs and mark whether to mount them
 func GetSA2(saBindingMap map[string]map[string][]string) map[string]*structure.SA {
 	result := make(map[string]*structure.SA, 0)
 	for sa, per := range saBindingMap {
@@ -70,7 +70,7 @@ func NewGetSA2(sas map[string]*structure.SA) map[string]*structure.SA {
 	return result
 }
 
-// 筛选高权限SA，顺便标记高权限SA是否在所控node中
+// Filter high-privilege SA and mark whether the high-privilege SA is in the controlled node.
 func GetCriticalSA(SAs map[string]*structure.SA, ControledNode string) []structure.CriticalSA {
 	result := []structure.CriticalSA{}
 	for _, sa := range SAs {
@@ -151,7 +151,7 @@ func GetCriticalSA(SAs map[string]*structure.SA, ControledNode string) []structu
 						rawType = "patchdaemonsets"
 						criticalSA.Type = append(criticalSA.Type, utils.CheckRestrict(k, rawType, &criticalSA))
 					}
-					if strings.Contains(k, "deployments") || strings.Contains(k, "*") { //patchPodController的* 统一归为Deployment
+					if strings.Contains(k, "deployments") || strings.Contains(k, "*") { // * of patchPodController are unified into Deployment.
 						rawType = "patchdeployments"
 						criticalSA.Type = append(criticalSA.Type, utils.CheckRestrict(k, rawType, &criticalSA))
 					}
@@ -334,7 +334,7 @@ func GetCriticalSA(SAs map[string]*structure.SA, ControledNode string) []structu
 	return result
 }
 
-// 获取SA（所有的，无论是否在Pod中挂载）
+// Get SAs (all, whether mounted in the Pod or not)
 func GetSaBinding() map[string]map[string][]string {
 	var SaBindingMap = map[string]map[string][]string{}
 	clusterrolebindingList := utils.GetClusterRoleBindings()
@@ -460,7 +460,7 @@ func GetSaBinding2() map[string]*structure.SA {
 
 //ClusterRole1: res
 
-// 在所控node中获取指定SA的token
+// Get the token of the specified SA in the controlled node.
 func GetCriticalSAToken(sa structure.CriticalSA, ssh structure.SSHConfig) (string, error) { //  /var/lib/kubelet/pods
 	filePath := "/var/lib/kubelet/pods/" + sa.SA0.SAPod.Uid + "/volumes/kubernetes.io*/*/token"
 	token, err := utils.ReadRemoteFile(ssh.Ip, ssh.Port, ssh.Username, ssh.Password, ssh.PrivateKeyFile, filePath)
@@ -469,23 +469,23 @@ func GetCriticalSAToken(sa structure.CriticalSA, ssh structure.SSHConfig) (strin
 	} else {
 		return token, nil
 	}
-	// 本地文件读取
+	// Local file reading
 	// fmt.Print("[msg] useCriticalSa: ", sa, "\n\n")
 	// pattern := "/var/lib/kubelet/pods/" + sa.SA0.SAPod.Uid + "/volumes/kubernetes.io*/*/token"
 	// matches, err := filepath.Glob(pattern)
 	// if err != nil {
-	// 	fmt.Println("查找文件时出错:", err)
+	// 	fmt.Println("An error occurred while locating the file:", err)
 	// 	return ""
 	// }
 	// if len(matches) == 0 {
-	// 	fmt.Println("没有匹配到文件")
+	// 	fmt.Println("No files matched.")
 	// 	return ""
 	// }
 	// filePath := matches[0]
 	// //fmt.Println(filePath)
 	// fileContents, err := ioutil.ReadFile(filePath)
 	// if err != nil {
-	// 	fmt.Println("无法读取文件内容:", err)
+	// 	fmt.Println("Unable to read file contents:", err)
 	// 	return ""
 	// }
 
