@@ -38,7 +38,7 @@ func ApiRequest(opts K8sRequestOption) (string, error) {
 		return "", err
 	}
 
-	//优先级: opts.token => token文件 => cert文件
+	//Priority: opts.token => token file => cert file
 	tokenBytes, _ := ioutil.ReadFile(conf.TokenFile)
 	var cert tls.Certificate
 	if opts.Token != "" {
