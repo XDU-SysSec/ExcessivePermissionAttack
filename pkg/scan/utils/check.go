@@ -26,7 +26,9 @@ func CheckSaTokenMounted(saName string) bool {
 	}
 	//fmt.Print(resp)
 	autoMount := gjson.Get(resp, "automountServiceAccountToken")
-	if autoMount.Exists() && autoMount.Bool() == false { //默认挂载SA，即存在该属性且值为false才为不挂载，没有该属性和有该属性且值为true均为挂载
+	//SA is mounted by default, that is, if this attribute exists and the value is false, it is not mounted.
+	//If there is no such attribute and the value is true, it is mounted.
+	if autoMount.Exists() && autoMount.Bool() == false { 
 		return false
 	}
 	return true
